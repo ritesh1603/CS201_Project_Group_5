@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+char arry[10000];
 void construct_rope(struct rope **root, struct rope *par, char array[], int lft, int rht)
 {
 
