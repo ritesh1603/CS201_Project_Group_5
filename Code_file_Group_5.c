@@ -139,3 +139,141 @@ struct rope *return_leafnode_at_given_position(int index_of_element, struct rope
     }
     return temp;
 }
+struct node *Split_rope(struct rope **root, int index, struct rope **newnode)
+{
+    int flag = 0;
+    struct rope *str = return_leafnode_at_given_position(index, *root);
+    char f = chr_index(index, *root);
+    // printf("%c",f);
+    struct rope *temp;
+    int pos;
+    if (str->para[0] == f)
+    { // printf("yes");
+        flag = 1;
+        temp = str;
+    }
+    if (str->para[0] != f)
+    {
+        for (int j = 0; j < str->coumt; j++)
+        {
+            if (str->para[j] == f)
+            {
+                pos = j;
+                break;
+            }
+        }
+        // printf("alp is %d",str->alp);
+        int n = str->alp;
+        // str->alp=pos-1;
+        char *aay = (char *)malloc(pos * sizeof(char));
+        char *aay1 = (char *)malloc((n - pos + 1) * sizeof(char));
+        ;
+        for (int i = 0; i < pos; i++)
+        {
+            aay[i] = str->para[i];
+        }
+        for (int i = pos; i <= n; i++)
+        {
+            aay1[i - pos] = str->para[i];
+        }
+        struct rope *t1 = (struct rope *)malloc(sizeof(struct rope));
+        struct rope *t2 = (struct rope *)malloc(sizeof(struct rope));
+        t1->left = NULL;
+        t1->right = NULL;
+        t2->left = NULL;
+        t2->right = NULL;
+        str->left = t1;
+        str->right = t2;
+        str->para = NULL;
+        str->left->para = aay;
+        str->left->alp = pos - 1;
+        str->left->coumt = pos;
+        str->right->alp = (n - pos);
+        str->right->coumt = (n - pos) + 1;
+        str->right->para = aay1;
+        str->alp = pos - 1;
+        t1->parent = str;
+        t2->parent = str;
+        temp = str->right;
+    }
+    int number = 0;
+    number = temp->coumt;
+    struct rope *m;
+    struct rope *s;
+    m = temp->parent;
+    if (flag != 1)
+    {
+       // printf("no");
+        m->right = NULL;
+    }
+    if (flag == 0)
+    {  // printf("no1");
+        s = temp;
+        *newnode = temp;
+    }
+    else
+    {    //printf("no2");
+        s = temp->parent;
+        *newnode = temp->parent;
+        if (m != NULL)
+        {
+            if (temp ==temp->parent->right)
+            {
+                s = temp;
+                *newnode = temp;
+                m->right=NULL;
+            }
+            else
+            {
+                //printf("hi");
+                struct rope *new1 = (struct rope *)malloc(sizeof(struct rope));
+                if(m->right==NULL){
+                    printf("yess");
+                }
+                concat(&new1, temp, temp->parent->right, temp->coumt);
+                m->right = NULL;
+                m->left=NULL;
+                // if(temp->parent==(*newnode)){
+                //     printf("yo");
+                // }
+                m->coumt = 0;
+                s = new1;
+                
+                //print(new1);
+                *newnode = new1;
+                //print(*root);
+            }
+        }
+        else
+        {   //printf("yo");
+            *root = NULL;
+            s = temp;
+            *newnode = temp;
+        }
+    }
+
+    while (m != root && m != NULL)
+    {
+        if (m->parent != NULL && m == m->parent->left)
+        {
+            if (m->parent->right != NULL)
+            {
+                struct rope *new = (struct rope *)malloc(sizeof(struct rope));
+                concat(&new, s, m->parent->right, number);
+                s = new;
+                m->parent->alp = m->parent->alp - number + 1;
+                struct rope *l = m->parent->right;
+                m->parent->right = NULL;
+                while (l != NULL)
+                {
+                    number = number + l->alp + 1;
+                    l = l->right;
+                }
+                *newnode = new;
+            }
+        }
+        m = m->parent;
+    }
+
+    return *newnode;
+}
