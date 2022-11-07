@@ -1,6 +1,13 @@
 #include<stdio.h>
 #include<stdlib.h>
 char arry[10000];
+struct rope
+{
+    struct rope *left, *right, *parent;
+    int alp;
+    char *para;
+    int coumt;
+};
 void construct_rope(struct rope **root, struct rope *par, char array[], int lft, int rht)
 {
 
